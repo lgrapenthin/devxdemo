@@ -45,28 +45,29 @@
     om/IRenderState
     (render-state [_ _]
       (let [page (:page cursor default-page)]
-        (dom/div nil
-          (highlight/code (pr-str cursor))
-          (n/nav {:bs-style "pills"
-                  :active-key page
-                  :on-select (fn [k _]
-                               (om/transact! cursor #(select-page % k)))}
-            (n/nav-item {:key :reactive-ui}
-                        "Reaktive UI")
-            (n/nav-item {:key :commos.delta}
-                        "commos.delta")
-            (n/nav-item {:key :commos.delta.compscribe}
-                        "commos.delta.compscribe"))
-          (r/page-header {}
-                         (get-in pages [page :title]))
-          (om/build (case page
-                      :reactive-ui
-                      reactive
-                      :commos.delta
-                      delta
-                      :commos.delta.compscribe
-                      compscribe)
-                    (get-in cursor [:pages page])))))))
+        (g/grid nil
+                (dom/div nil
+                  (highlight/code (pr-str cursor))
+                  (n/nav {:bs-style "pills"
+                          :active-key page
+                          :on-select (fn [k _]
+                                       (om/transact! cursor #(select-page % k)))}
+                    (n/nav-item {:key :reactive-ui}
+                                "Reaktive UI")
+                    (n/nav-item {:key :commos.delta}
+                                "commos.delta")
+                    (n/nav-item {:key :commos.delta.compscribe}
+                                "commos.delta.compscribe"))
+                  (r/page-header {}
+                                 (get-in pages [page :title]))
+                  (om/build (case page
+                              :reactive-ui
+                              reactive
+                              :commos.delta
+                              delta
+                              :commos.delta.compscribe
+                              compscribe)
+                            (get-in cursor [:pages page]))))))))
 
 (defn main
   [app-state out]

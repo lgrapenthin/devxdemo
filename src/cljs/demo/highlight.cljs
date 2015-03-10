@@ -37,7 +37,8 @@
     (render-state [_ {:keys [indented-code]}]
       (dom/pre #js{:className "clojure"
                    :ref "code-block"}
-        (dom/code #js{:style #js{:fontFamily "monospace"}}
+        (dom/code #js{:style #js{:fontFamily "monospace"
+                                 :fontSize "16px"}}
           indented-code)))))
 
 (defn code [code]
