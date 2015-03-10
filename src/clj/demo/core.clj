@@ -20,7 +20,9 @@
   (->
    (h/html5
     [:head
-     [:link {:href "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css", :rel "stylesheet"}]]
+     [:link {:href "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css", :rel "stylesheet"}]
+     [:link {:href "/hljs/styles/zenburn.css", :rel "stylesheet"}]
+     [:script {:src "/hljs/highlight.pack.js"}]]
     [:body
      [:div {:id "om"}]
      [:script {:src "/js/main.js"}]])

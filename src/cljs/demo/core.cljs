@@ -16,6 +16,7 @@
             [demo.pages.reactive :refer [reactive]]
             [demo.pages.delta :refer [delta]]
             [demo.pages.compscribe :refer [compscribe]]
+            [demo.highlight :as highlight]
             [demo.helpers :as helpers]
             
             [weasel.repl :as ws-repl]
@@ -31,7 +32,7 @@
 (defn- select-page [state k]
   (-> state
       (update-in [:pages k]
-                 (fnil identity (get-in pages [k :init])))
+                 (fnil identity (get-in pages [k :init] {})))
       (assoc :page k)))
 
 (defn root
@@ -45,6 +46,7 @@
     (render-state [_ _]
       (let [page (:page cursor default-page)]
         (dom/div nil
+          (highlight/code (pr-str cursor))
           (n/nav {:bs-style "pills"
                   :active-key page
                   :on-select (fn [k _]
