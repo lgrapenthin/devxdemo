@@ -1,6 +1,19 @@
 (ns demo.highlight
   (:require [om.core :as om]
-            [om.dom :as dom :include-macros true]))
+            [om.dom :as dom :include-macros true])
+  
+  (:import [goog.net XhrIo]
+           [goog Uri]))
+
+(defn ppr [edn cont]
+  (.send XhrIo
+         "/pprint/"
+         (fn [e]
+           (cont (.getResponseText (.-target e))))
+         "POST"
+         (-> (Uri.QueryData.)
+             (doto (.set "edn" edn))
+             (.toString))))
 
 (defn- highlight
   [owner]
@@ -8,19 +21,24 @@
 
 (defn- code* [code owner]
   (reify
+    om/IWillMount
+    (will-mount [_]
+      (ppr code #(om/set-state! owner :indented-code %)))
     om/IDidMount
     (did-mount [_]
-      (highlight owner)
-      (om/set-state! owner :mounted? true))
+      (highlight owner))
     om/IDidUpdate
     (did-update [_ _ _]
       (highlight owner))
-    om/IRender
-    (render [_]
+    om/IWillReceiveProps
+    (will-receive-props [_ next-props]
+      (ppr next-props #(om/set-state! owner :indented-code %)))
+    om/IRenderState
+    (render-state [_ {:keys [indented-code]}]
       (dom/pre #js{:className "clojure"
                    :ref "code-block"}
         (dom/code #js{:style #js{:fontFamily "monospace"}}
-          code)))))
+          indented-code)))))
 
 (defn code [code]
   (om/build code* code))

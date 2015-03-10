@@ -8,8 +8,10 @@
             [ring.middleware.keyword-params :refer [wrap-keyword-params]]
 
             [weasel.repl.websocket :as weasel-ws]
-            [cemerick.piggieback])
-  (:use [clojure.repl]))
+            [cemerick.piggieback]
+            [clojure.pprint :as pprint]
+            [clojure.edn :as edn])
+  (:use [clojure.repl])) 
 
 (defn cljs-repl []
   (cemerick.piggieback/cljs-repl
@@ -29,10 +31,21 @@
    (resp/response)
    (resp/content-type "text/html; charset=utf-8")))
 
+(defn- handler [req]
+  (println req)
+  (case (:uri req)
+    "/pprint/"
+    (-> (with-out-str
+          (pprint/write (edn/read-string (get-in req [:params :edn]))
+                        :dispatch pprint/code-dispatch))
+        (resp/response)
+        (resp/content-type "text/html; charset=utf-8"))
+    (ui-handler req)))
+
 (def server nil)
 
 (defn start []
-  (-> ui-handler
+  (-> handler
       (wrap-resource "/public")
       (wrap-file-info)
       (wrap-keyword-params)
