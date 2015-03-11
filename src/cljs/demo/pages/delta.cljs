@@ -9,8 +9,7 @@
             
             [commos.delta :as delta]
 
-            [cljs.reader :as reader]
-
+            [demo.helpers :refer [safe-read]]
             [demo.highlight :as highlight]))
 
 (defn inspect-deltas
@@ -40,21 +39,72 @@
         [(dom/form #js{:onSubmit
                        (fn [e]
                          (.preventDefault e)
-                         (when-let [v (try
-                                        (reader/read-string code-input)
-                                        (catch :default _
-                                          nil))]
+                         (when-let [v (safe-read code-input)]
                            (om/transact! deltas #(conj % v))
                            (om/set-state! owner :code-input "")))}
-           (i/input {:type "text"
-                     :value code-input
-                     :on-change (fn [e]
-                                  (om/set-state! owner :code-input
-                                                 (.. e -target -value)))}))])))))
+           (g/row
+            {}
+            (g/col {:xs 1}
+              (dom/h5 nil "+"))
+            (g/col {:xs 11}
+              (i/input {:type "text"
+                        :value code-input
+                        :on-change
+                        (fn [e]
+                          (om/set-state! owner :code-input
+                                         (.. e -target -value)))}))))])))))
+
+(defn basic-add [cursor owner]
+  (om/component
+   (dom/div nil
+     (dom/h4 nil (dom/code nil "add") " Operation")
+     (om/build inspect-deltas (:deltas cursor))
+     (g/row
+      {}
+      (g/col {:xs 1}
+        (dom/h5 nil "="))
+      (g/col {:xs 11}
+        (highlight/code (reduce delta/add nil @(:deltas cursor))))))))
+
+(defn unpack-op [cursor owner]
+  (reify
+    om/IRenderState
+    (render-state [_ {:keys [code-input]}]
+      (apply
+       dom/div nil
+       (dom/h4 nil (dom/code nil "unpack") " Operation")
+       (i/input {:type "text"
+                 :value code-input
+                 :on-change
+                 (fn [e]
+                   (om/set-state! owner :code-input
+                                  (.. e -target -value)))})
+       (for [delta (delta/unpack (safe-read code-input))]
+         (highlight/code delta))))))
+
+(defn diagnostic-op [cursor owner]
+  (reify
+    om/IRenderState
+    (render-state [_ {:keys [code-input]}]
+      (apply
+       dom/div nil
+       (dom/h4 nil (dom/code nil "diagnostic-delta") " Operation")
+       (i/input {:type "text"
+                 :value code-input
+                 :on-change
+                 (fn [e]
+                   (om/set-state! owner :code-input
+                                  (.. e -target -value)))})
+       (for [delta (->> (safe-read code-input)
+                        (delta/unpack)
+                        (map delta/diagnostic-delta))]
+         (highlight/code delta))))))
 
 (defn delta [cursor owner]
   (om/component
    (dom/div nil
-     (om/build inspect-deltas (:deltas cursor))
+     (om/build basic-add cursor)
      (dom/hr nil)
-     (highlight/code (reduce delta/add nil @(:deltas cursor))))))
+     (om/build unpack-op cursor)
+     (dom/hr nil)
+     (om/build diagnostic-op cursor))))
