@@ -25,20 +25,31 @@
   [owner]
   (.highlightBlock js/hljs (om/get-node owner "code-block")))
 
+(defn- update-code
+  [owner code]
+  (om/update-state! owner (fn [{:keys [indented-code]}]
+                            {:indented-code code
+                             :render? (not= indented-code code)})))
+
 (defn- code* [code owner]
   (reify
+    om/IInitState
+    (init-state [_]
+      {:render? true})
     om/IWillMount
     (will-mount [_]
-      (ppr (str code) #(om/set-state! owner :indented-code %)))
+      (ppr (str code) #(update-code owner %)))
     om/IDidMount
     (did-mount [_]
       (highlight owner))
-    om/IDidUpdate
-    (did-update [_ _ _]
-      (highlight owner))
     om/IWillReceiveProps
-    (will-receive-props [_ next-props]
-      (ppr (str next-props) #(om/set-state! owner :indented-code %)))
+    (will-receive-props [_ next-code]
+      (ppr (str next-code)
+           #(update-code owner %)))
+    om/IDidUpdate
+    (did-update [_ _ {:keys [render?]}]
+      (when render?
+        (highlight owner)))
     om/IRenderState
     (render-state [_ {:keys [indented-code]}]
       (dom/pre #js{:className "clojure"
