@@ -5,15 +5,21 @@
   (:import [goog.net XhrIo]
            [goog Uri]))
 
+(def ^:private ppr-cache (atom nil))
+
 (defn ppr [edn cont]
-  (.send XhrIo
-         "/pprint/"
-         (fn [e]
-           (cont (.getResponseText (.-target e))))
-         "POST"
-         (-> (Uri.QueryData.)
-             (doto (.set "edn" edn))
-             (.toString))))
+  (if-let [cached (get @ppr-cache edn)]
+    (cont cached)
+    (.send XhrIo
+           "/pprint/"
+           (fn [e]
+             (let [r (.getResponseText (.-target e))]
+               (cont r)
+               (swap! ppr-cache assoc edn r)))
+           "POST"
+           (-> (Uri.QueryData.)
+               (doto (.set "edn" edn))
+               (.toString)))))
 
 (defn- highlight
   [owner]
