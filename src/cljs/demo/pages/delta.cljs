@@ -57,4 +57,4 @@
    (dom/div nil
      (om/build inspect-deltas (:deltas cursor))
      (dom/hr nil)
-     (highlight/code (reduce delta/add nil (:deltas cursor))))))
+     (highlight/code (reduce delta/add nil @(:deltas cursor))))))
