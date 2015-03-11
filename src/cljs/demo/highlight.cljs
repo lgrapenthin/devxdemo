@@ -23,7 +23,7 @@
   (reify
     om/IWillMount
     (will-mount [_]
-      (ppr code #(om/set-state! owner :indented-code %)))
+      (ppr (str code) #(om/set-state! owner :indented-code %)))
     om/IDidMount
     (did-mount [_]
       (highlight owner))
@@ -32,7 +32,7 @@
       (highlight owner))
     om/IWillReceiveProps
     (will-receive-props [_ next-props]
-      (ppr next-props #(om/set-state! owner :indented-code %)))
+      (ppr (str next-props) #(om/set-state! owner :indented-code %)))
     om/IRenderState
     (render-state [_ {:keys [indented-code]}]
       (dom/pre #js{:className "clojure"

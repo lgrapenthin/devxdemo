@@ -24,7 +24,8 @@
 
 (def pages {:reactive-ui {:title "Reaktive UI"
                           :init {:celsius 0}}
-            :commos.delta {:title "commos.delta"}
+            :commos.delta {:title "commos.delta"
+                           :init {:deltas []}}
             :commos.delta.compscribe {:title "commos.delta.compscribe"}})
 
 (def default-page :reactive-ui)
