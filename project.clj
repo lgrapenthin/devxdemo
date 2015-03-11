@@ -29,7 +29,6 @@
                    :source-paths ["src/dev/clj"
                                   ;; cljs:
                                   "src/cljs"
-                                  "target/gen_cljs"
                                   "src/dev/cljs"]
                    :cljsbuild
                    {:builds
