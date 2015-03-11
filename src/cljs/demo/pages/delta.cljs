@@ -57,7 +57,7 @@
 (defn basic-add [cursor owner]
   (om/component
    (dom/div nil
-     (dom/h4 nil (dom/code nil "add") " Operation")
+     (dom/h4 nil (dom/code nil "add"))
      (om/build inspect-deltas (:deltas cursor))
      (g/row
       {}
@@ -72,7 +72,7 @@
     (render-state [_ {:keys [code-input]}]
       (apply
        dom/div nil
-       (dom/h4 nil (dom/code nil "unpack") " Operation")
+       (dom/h4 nil (dom/code nil "unpack"))
        (i/input {:type "text"
                  :value code-input
                  :on-change
@@ -88,7 +88,7 @@
     (render-state [_ {:keys [code-input]}]
       (apply
        dom/div nil
-       (dom/h4 nil (dom/code nil "diagnostic-delta") " Operation")
+       (dom/h4 nil (dom/code nil "diagnostic-delta"))
        (i/input {:type "text"
                  :value code-input
                  :on-change
