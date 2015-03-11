@@ -79,7 +79,7 @@
                  (fn [e]
                    (om/set-state! owner :code-input
                                   (.. e -target -value)))})
-       (for [delta (delta/unpack (safe-read code-input))]
+       (for [delta (some-> (safe-read code-input) delta/unpack)]
          (highlight/code delta))))))
 
 (defn diagnostic-op [cursor owner]
@@ -95,9 +95,9 @@
                  (fn [e]
                    (om/set-state! owner :code-input
                                   (.. e -target -value)))})
-       (for [delta (->> (safe-read code-input)
-                        (delta/unpack)
-                        (map delta/diagnostic-delta))]
+       (for [delta (some->> (safe-read code-input)
+                            (delta/unpack)
+                            (map delta/diagnostic-delta))]
          (highlight/code delta))))))
 
 (defn delta [cursor owner]
