@@ -32,7 +32,6 @@
    (resp/content-type "text/html; charset=utf-8")))
 
 (defn- handler [req]
-  (println req)
   (case (:uri req)
     "/pprint/"
     (-> (with-out-str
