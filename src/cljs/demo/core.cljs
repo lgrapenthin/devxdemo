@@ -75,7 +75,8 @@
             (get pages page)]
         (g/grid nil
                 (dom/div nil
-                  (highlight/code (pr-str cursor))
+                  (if (= page :reactive-ui)
+                    (highlight/code (pr-str cursor)))
                   (n/nav {:bs-style "pills"
                           :active-key page
                           :on-select (fn [k _]
@@ -96,6 +97,7 @@
                       (dom/a #js{:href documentation-link
                                  :target "_blank"}
                         (dom/i nil documentation))))
+                  (dom/hr nil)
                   (om/build (case page
                               :reactive-ui
                               reactive
