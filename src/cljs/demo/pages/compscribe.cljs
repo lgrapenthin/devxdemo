@@ -16,27 +16,20 @@
             [cljs.core.async.impl.protocols :refer [Channel]])
   (:require-macros [cljs.core.async.macros :refer [go-loop go]]))
 
-(defprotocol ISubscribable
-  (subscribe [this endpoint ch])
-  (unsubscribe [this endpoint ch]))
-
-(defn- chan?
-  [x]
-  (satisfies? Channel x))
-
 (defn simulate-api
   "Helper to simulate different API endpoints via endpoints, a map
   endpoint->spec, where spec consists of
 
-  :deltas - a map value->deltas.  Channels may be placed instead of
-  deltas and block successive deltas to simulate coordination 
-  scenarios.
+  :deltas - a map value->deltas.  A pseudo delta [:timeout ms] may be
+  used to delay successive deltas.
   
-  :unsubs-mode - either :nop (default) or :close.  Deltas are put on
-  the returned channels \"as is\".
+  :unsubs-mode - either :nop (default) or :close.  Whether the
+  channel should be closed when unsubs-fn is called.
+
+  Deltas are put on the returned channels \"as is\".
 
   Returns [subs-fn unsubs-fn channels] where subs-state is an atom
-  endpoint->value->channels, for inspection."
+  endpoint->value->channels, for inspection purposes."
   [endpoints]
   (let [subs (atom {})
         unsubscribable (atom #{})]
