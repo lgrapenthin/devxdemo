@@ -5,17 +5,18 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.7.0-alpha5"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
-                 [com.stuartsierra/component "0.2.2"]
+                 
                  [http-kit "2.1.19"]
                  [hiccup "1.0.5"]
                  [ring "1.3.2"]
                  [ring/ring-codec "1.0.0"]
-                 [org.commos/delta "0.2.2"]
+                 [org.commos/delta "0.2.3"]
                  [org.commos/delta.compscribe "0.1.5"]
                  
                  [org.clojure/clojurescript "0.0-3058"]
                  [org.omcljs/om "0.8.8"]
                  [racehub/om-bootstrap "0.4.2"]]
+  :repl-options {:init-ns demo.core}
   :source-paths ["src/clj" "src/cljs"]
   :profiles {:dev {:dependencies [[org.clojure/tools.namespace "0.2.9"]
                                   [com.cemerick/piggieback "0.1.5"]
