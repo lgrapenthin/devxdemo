@@ -20,7 +20,7 @@
   :source-paths ["src/clj" "src/cljs"]
   :profiles {:dev {:dependencies [[org.clojure/tools.namespace "0.2.9"]
                                   [figwheel "0.2.5-SNAPSHOT"]]
-                   :plugins [[lein-cljsbuild "1.0.4"]
+                   :plugins [[lein-cljsbuild "1.0.5"]
                              [lein-figwheel "0.2.5-SNAPSHOT"]]
                    :source-paths ["src/dev/clj"
                                   ;; cljs:
