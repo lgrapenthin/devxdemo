@@ -21,8 +21,7 @@
   :profiles {:dev {:dependencies [[org.clojure/tools.namespace "0.2.9"]
                                   [figwheel "0.2.5-SNAPSHOT"]]
                    :plugins [[lein-cljsbuild "1.0.4"]
-                             [lein-figwheel "0.2.5-SNAPSHOT"]
-                             [com.keminglabs/cljx "0.5.0"]]
+                             [lein-figwheel "0.2.5-SNAPSHOT"]]
                    :source-paths ["src/dev/clj"
                                   ;; cljs:
                                   "src/cljs"
