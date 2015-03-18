@@ -7,6 +7,8 @@
 
             [om-bootstrap.input :as i]
             [om-bootstrap.button :as b]
+            [om-bootstrap.grid :as g]
+            [om-bootstrap.panel :as p]
             
             [commos.delta :as delta]
             [commos.delta.compscribe :as compscribe]
@@ -62,17 +64,20 @@
     om/IWillMount
     (will-mount [_]
       (js/console.log "spec/id: " (pr-str [spec id]))
-      (let [ch-in (chan 1 delta/values)
+      (let [ch-in (chan)
             end-subs (compscribe/compscribe
                       ch-in
                       (first subscribable)
                       (second subscribable)
                       spec
                       id)]
-        (go-loop []
+        (go-loop [sum nil]
           (when-some [v (<! ch-in)]
-            (om/set-state! owner :streamed-val v)
-            (recur)))
+            (let [sum (delta/add sum v)]
+              (om/update-state! owner :deltas (fnil #(conj % v) []))
+              (om/set-state! owner :streamed-val sum)
+              (recur sum)))
+          (om/set-state! owner :simulation-over? true))
         (om/set-state! owner :end-subs end-subs)))
     om/IWillUnmount
     (will-unmount [_]
@@ -80,8 +85,20 @@
         (end-subs)
         (om/update-state! owner #(dissoc % :end-subs))))
     om/IRenderState
-    (render-state [_ {:keys [streamed-val]}]
-      (highlight/code streamed-val))))
+    (render-state [_ {:keys [streamed-val simulation-over? deltas]}]
+      (p/panel
+       {:header (str "Simulation"
+                     (if simulation-over?
+                       " (beendet)"))}
+       (dom/h4 nil
+         "Received deltas:"
+         (apply
+          dom/div nil
+          (for [delta deltas]
+            (highlight/code delta))))
+       (dom/h4 nil
+         "Sum:"
+         (highlight/code streamed-val))))))
 
 (def demo-deltas
   {"/customers/" {:deltas {3
@@ -130,11 +147,53 @@
     (render-state [_ {:keys [subscribable input-val input-delta]}]
       (apply
        dom/div nil
+       (dom/h4 nil "Simulated endpoints: ")
+       (highlight/code demo-deltas)
        (concat
+        [(dom/form #js{:onSubmit (fn [e]
+                                    (.preventDefault e)
+                                    (when-some [v (safe-read input-val)]
+                                      (om/transact! cursor :subs
+                                                    #(conj % v))
+                                      #_(om/set-state! owner :input-val nil)))}
+            (i/input {:label "Neue Compscription:"
+                      :type "text"
+                      :value input-val
+                      :on-change #(om/set-state! owner :input-val
+                                                 (.. % -target -value))}))
+         (apply dom/div nil
+           (dom/h5 nil "Beispiele:")
+           (for [spec [{:spec ["/customers/"]
+                        :id 3}
+
+                       {:spec ["/customers/"]
+                        :id 4}
+
+                       {:spec ["/orders/"],
+                        :id 4004}
+
+                       {:spec ["/customers/" {:orders ["/orders/"]}],
+                        :id 4}
+
+                       {:spec ["/customers/" {:orders ["/orders/" {:article ["/articles/"]}]}],
+                        :id 4}]]
+             (g/row
+              {:md 12}
+              (g/col {:md 10}
+                (highlight/code spec))
+              (g/col {:md 2}
+                (dom/a #js{:href "javascript:void(0);"
+                           :onClick
+                           (fn [_]
+                             (om/transact! cursor :subs
+                                           #(conj % spec))
+                             (om/set-state! owner :input-val (pr-str spec)))}
+                  "Ausprobieren"))))
+           )]
         (mapcat
          (fn [sub]
            [(dom/hr nil)
-            (highlight/code @sub)
+            (highlight/code (om/value sub))
             (om/build compscription
                       {:subscribable subscribable
                        :subscription sub})
@@ -144,15 +203,4 @@
                                                        (remove #{sub})
                                                        vec)))}
               "Entfernen")])
-         (:subs cursor))
-        [(dom/form #js{:onSubmit (fn [e]
-                                    (.preventDefault e)
-                                    (when-some [v (safe-read input-val)]
-                                      (om/transact! cursor :subs
-                                                    (fnil #(conj % v) []))
-                                      #_(om/set-state! owner :input-val nil)))}
-            (i/input {:label "Neue Compscription:"
-                      :type "text"
-                      :value input-val
-                      :on-change #(om/set-state! owner :input-val
-                                                 (.. % -target -value))}))])))))
+         (:subs cursor)))))))
