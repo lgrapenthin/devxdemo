@@ -23,7 +23,8 @@
             [figwheel.client :as fw :include-macros true]))
 
 (def pages {:reactive-ui {:title "Reaktive UI"
-                          :init {:celsius 0}}
+                          :init {:celsius 0}
+                          :documentation "Notice changes in the application model while experimenting with the converter.  Notice that the Fahrenheit value is not stored but calculated during rendering and used to calculate the celsius value from input.  Use a REPL to change the application state and see effects realized immediately: E. g. enter: (swap! demo.core/app-state assoc-in [:pages :reactive-ui :celsius] 400).  Enter (swap! demo.core/app-state assoc :page :commos.delta) as a fancy way to get to the next page."}
             :commos.delta
             {:title "commos.delta"
              :url "https://github.com/commos/delta"
@@ -94,9 +95,10 @@
                                      :target "_blank"})))
                   (if documentation
                     (dom/div nil "Documentation: "
-                      (dom/a #js{:href documentation-link
-                                 :target "_blank"}
-                        (dom/i nil documentation))))
+                      (cond->> (dom/i nil documentation)
+                        documentation-link
+                        (dom/a #js{:href documentation-link
+                                   :target "_blank"}))))
                   (dom/hr nil)
                   (om/build (case page
                               :reactive-ui
