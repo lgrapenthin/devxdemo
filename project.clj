@@ -19,9 +19,7 @@
   :repl-options {:init-ns demo.core}
   :source-paths ["src/clj" "src/cljs"]
   :profiles {:dev {:dependencies [[org.clojure/tools.namespace "0.2.9"]
-                                  [com.cemerick/piggieback "0.1.5"]
-                                  [weasel "0.6.0-SNAPSHOT"]
-                                  [figwheel "0.2.3-SNAPSHOT"]]
+                                  [figwheel "0.2.5-SNAPSHOT"]]
                    :plugins [[lein-cljsbuild "1.0.4"]
                              [lein-figwheel "0.2.5-SNAPSHOT"]
                              [com.keminglabs/cljx "0.5.0"]]

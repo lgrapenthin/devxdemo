@@ -7,16 +7,9 @@
             [ring.middleware.params :refer [wrap-params]]
             [ring.middleware.keyword-params :refer [wrap-keyword-params]]
 
-            [weasel.repl.websocket :as weasel-ws]
-            [cemerick.piggieback]
             [clojure.pprint :as pprint]
             [clojure.edn :as edn])
   (:use [clojure.repl])) 
-
-(defn cljs-repl []
-  (cemerick.piggieback/cljs-repl
-   :repl-env (weasel-ws/repl-env :ip "0.0.0.0"
-                                 :port 9001)))
 
 (defn- ui-handler [req]
   (->

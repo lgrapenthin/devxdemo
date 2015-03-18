@@ -19,7 +19,6 @@
             [demo.highlight :as highlight]
             [demo.helpers :as helpers]
             
-            [weasel.repl :as ws-repl]
             [figwheel.client :as fw :include-macros true]))
 
 (def pages {:reactive-ui {:title "Reaktive UI"
@@ -133,11 +132,6 @@
                         (set! out (chan)) ;; per reload we need a new chan.
                         (main app-state out)))
 
-    (try
-      (ws-repl/connect "ws://localhost:9001" :verbose true)
-      (catch :default e
-        nil))
-    
     (main app-state out)
     
     true))
