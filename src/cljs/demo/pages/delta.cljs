@@ -58,6 +58,7 @@
   (om/component
    (dom/div nil
      (dom/h4 nil (dom/code nil "add"))
+     (dom/i nil "experiment with adding and removing of different deltas here")
      (om/build inspect-deltas (:deltas cursor))
      (g/row
       {}
@@ -68,11 +69,18 @@
 
 (defn unpack-op [cursor owner]
   (reify
+    om/IInitState
+    (init-state [_]
+      {:code-input (pr-str [:on {:orders [4020]
+                                         :friends
+                                         {5000 {:orders #{3010 3012}
+                                                :middle-name "Van"}}}])})
     om/IRenderState
     (render-state [_ {:keys [code-input]}]
       (apply
        dom/div nil
        (dom/h4 nil (dom/code nil "unpack"))
+       (dom/i nil "via unpack, you always get a sequence of exclusively :is, :in or :ex deltas, while :batch, :on and :off deltas are unpacked.")
        (i/input {:type "text"
                  :value code-input
                  :on-change
@@ -84,11 +92,18 @@
 
 (defn diagnostic-op [cursor owner]
   (reify
+    om/IInitState
+    (init-state [_]
+      {:code-input (pr-str [:on {:orders [4020]
+                                 :friends
+                                 {5000 {:orders #{3010 3012}
+                                        :middle-name "Van"}}}])})
     om/IRenderState
     (render-state [_ {:keys [code-input]}]
       (apply
        dom/div nil
        (dom/h4 nil (dom/code nil "diagnostic-delta"))
+       (dom/i nil "after using unpack, conforming deltas via diagnostic-delta makes it easier to write validation code (this example applies unpack on your input before mapping diagnostic-delta)")
        (i/input {:type "text"
                  :value code-input
                  :on-change
