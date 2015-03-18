@@ -24,7 +24,7 @@ cd devxdemo
 ```
 lein figwheel dev
 ```
-Sobald die Seite in Schritt 7 im Browser offen ist, steht von hier aus auch ein interaktives ClojureScript REPL zur Verfügung.
+Sobald die Seite in Schritt 7 im Browser offen ist, steht von hier aus auch ein interaktives ClojureScript REPL zur Verfügung.  Zusätzlich werden Änderungen in Dateien mit CLJS Endung automatisch und live nachgezogen.
 
 4. Separate Shell im gleichen Verzeichnis starten
 
