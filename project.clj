@@ -23,8 +23,6 @@
                    :plugins [[lein-cljsbuild "1.0.4"]
                              [lein-figwheel "0.2.5-SNAPSHOT"]
                              [com.keminglabs/cljx "0.5.0"]]
-                   :repl-options {:nrepl-middleware
-                                  [cemerick.piggieback/wrap-cljs-repl]}
                    :source-paths ["src/dev/clj"
                                   ;; cljs:
                                   "src/cljs"
