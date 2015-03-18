@@ -24,9 +24,30 @@
 
 (def pages {:reactive-ui {:title "Reaktive UI"
                           :init {:celsius 0}}
-            :commos.delta {:title "commos.delta"
-                           :init {:deltas []}}
-            :commos.delta.compscribe {:title "commos.delta.compscribe"}})
+            :commos.delta
+            {:title "commos.delta"
+             :url "https://github.com/commos/delta"
+             :documentation "On crossclj.info"
+             :documentation-link "http://crossclj.info/doc/org.commos/delta/latest/commos.delta.html"
+             :init {:deltas
+                    [[:is :first-name "Leon"]
+                     [:is :last-name "Grapenthin"]
+                     [:in :orders [4002 4003 4004]]
+                     [:ex :orders 4002]
+                     [:is [:friends 5000]
+                      {:first-name "Ludwig"
+                       :last-name "Beethoven"}]
+                     [:on {:orders [4020]
+                           :friends
+                           {5000 {:orders #{3010 3012}
+                                  :middle-name "Van"}}}]
+                     [:off {:orders [4003]
+                            :friends {5000 {:orders [3010]}}}]]}}
+            :commos.delta.compscribe
+            {:title "commos.delta.compscribe"
+             :url "https://github.com/commos/delta.compscribe"
+             :documentation "On crossclj.info"
+             :documentation-link "http://crossclj.info/doc/org.commos/delta.compscribe/0.1.5/commos.delta.compscribe.html#_compscribe"}})
 
 (def default-page :reactive-ui)
 
@@ -45,7 +66,13 @@
     (will-unmount [_])
     om/IRenderState
     (render-state [_ _]
-      (let [page (:page cursor default-page)]
+      (let [page (:page cursor default-page)
+            
+            {:keys [title
+                    url
+                    documentation
+                    documentation-link]}
+            (get pages page)]
         (g/grid nil
                 (dom/div nil
                   (highlight/code (pr-str cursor))
@@ -59,8 +86,16 @@
                                 "commos.delta")
                     (n/nav-item {:key :commos.delta.compscribe}
                                 "commos.delta.compscribe"))
-                  (r/page-header {}
-                                 (get-in pages [page :title]))
+                  (r/page-header
+                    {}
+                    (cond->> title
+                      url (dom/a #js{:href url
+                                     :target "_blank"})))
+                  (if documentation
+                    (dom/div nil "Documentation: "
+                      (dom/a #js{:href documentation-link
+                                 :target "_blank"}
+                        (dom/i nil documentation))))
                   (om/build (case page
                               :reactive-ui
                               reactive
